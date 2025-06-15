@@ -1150,6 +1150,19 @@
             });
         }
 
+        // Test Firebase connection
+        async function testFirebaseConnection() {
+            try {
+                await waitForFirebase();
+                const { collection, addDoc } = window.firestore;
+                console.log('Firebase connection test: SUCCESS');
+                return true;
+            } catch (error) {
+                console.error('Firebase connection test: FAILED', error);
+                return false;
+            }
+        }
+
         // Modal functionality
         createBetBtn.addEventListener('click', () => {
             modal.style.display = 'block';
@@ -1246,11 +1259,18 @@
             const voterName = prompt("What's your name?");
             if (!voterName || voterName.trim() === '') return;
             
-            await waitForFirebase();
-            const { doc, updateDoc, arrayUnion } = window.firestore;
+            console.log('Voting:', { betId, side, voterName });
             
-            const bet = bets.find(b => b.id === betId);
-            if (bet) {
+            try {
+                await waitForFirebase();
+                const { doc, updateDoc, arrayUnion } = window.firestore;
+                
+                const bet = bets.find(b => b.id === betId);
+                if (!bet) {
+                    alert('Bet not found!');
+                    return;
+                }
+                
                 // Initialize voter arrays if they don't exist
                 if (!bet.sideAVoters) bet.sideAVoters = [];
                 if (!bet.sideBVoters) bet.sideBVoters = [];
@@ -1264,38 +1284,48 @@
                     return;
                 }
                 
-                try {
-                    const betRef = doc(window.db, 'bets', betId);
-                    
-                    if (side === 'A') {
-                        await updateDoc(betRef, {
-                            sideAVotes: (bet.sideAVotes || 0) + 1,
-                            sideAVoters: arrayUnion(voterName)
-                        });
-                    } else {
-                        await updateDoc(betRef, {
-                            sideBVotes: (bet.sideBVotes || 0) + 1,
-                            sideBVoters: arrayUnion(voterName)
-                        });
-                    }
-                    
-                    // Add a little animation feedback
-                    const betCard = document.querySelector(`[data-bet-id="${betId}"]`);
-                    betCard.style.transform = 'scale(1.02)';
-                    setTimeout(() => {
-                        betCard.style.transform = 'scale(1)';
-                    }, 200);
-                } catch (error) {
-                    console.error('Error voting:', error);
-                    alert('Error voting. Please try again.');
+                const betRef = doc(window.db, 'bets', betId);
+                console.log('Updating bet:', betRef);
+                
+                if (side === 'A') {
+                    await updateDoc(betRef, {
+                        sideAVotes: (bet.sideAVotes || 0) + 1,
+                        sideAVoters: arrayUnion(voterName)
+                    });
+                } else {
+                    await updateDoc(betRef, {
+                        sideBVotes: (bet.sideBVotes || 0) + 1,
+                        sideBVoters: arrayUnion(voterName)
+                    });
                 }
+                
+                console.log('Vote recorded successfully');
+                
+                // Add a little animation feedback
+                const betCard = document.querySelector(`[data-bet-id="${betId}"]`);
+                betCard.style.transform = 'scale(1.02)';
+                setTimeout(() => {
+                    betCard.style.transform = 'scale(1)';
+                }, 200);
+                
+            } catch (error) {
+                console.error('Error voting:', error);
+                alert(`Error voting: ${error.message}`);
             }
         }
 
         // Delete a bet with two witty confirmations
         async function deleteBet(betId) {
+            console.log('Attempting to delete bet:', betId);
+            
             const bet = bets.find(b => b.id === betId);
-            if (!bet) return;
+            if (!bet) {
+                console.error('Bet not found:', betId);
+                alert('Bet not found!');
+                return;
+            }
+            
+            console.log('Found bet to delete:', bet);
             
             // First confirmation
             const firstConfirm = confirm(
@@ -1303,7 +1333,10 @@
                 `This will disappear faster than your 2 CHF when you lose a bet!`
             );
             
-            if (!firstConfirm) return;
+            if (!firstConfirm) {
+                console.log('User cancelled first confirmation');
+                return;
+            }
             
             // Second confirmation - even wittier
             const secondConfirm = confirm(
@@ -1313,19 +1346,31 @@
                 `Last chance to stop...`
             );
             
-            if (!secondConfirm) return;
+            if (!secondConfirm) {
+                console.log('User cancelled second confirmation');
+                return;
+            }
+            
+            console.log('User confirmed deletion, proceeding...');
             
             try {
                 await waitForFirebase();
+                console.log('Firebase is ready');
+                
                 const { doc, deleteDoc } = window.firestore;
+                console.log('Got Firebase functions');
+                
                 const betRef = doc(window.db, 'bets', betId);
+                console.log('Created document reference:', betRef);
+                
                 await deleteDoc(betRef);
+                console.log('Document deleted successfully');
                 
                 // Little message for the delete
                 alert("Bet deleted! I hope everybody got paid out.");
             } catch (error) {
                 console.error('Error deleting bet:', error);
-                alert('Error deleting bet. Please try again.');
+                alert(`Error deleting bet: ${error.message}`);
             }
         }
 
@@ -1376,7 +1421,17 @@
         });
 
         // Initialize bets when page loads
-        document.addEventListener('DOMContentLoaded', () => {
+        document.addEventListener('DOMContentLoaded', async () => {
+            console.log('Page loaded, initializing Firebase...');
+            
+            // Test Firebase connection first
+            const connected = await testFirebaseConnection();
+            if (!connected) {
+                alert('Firebase connection failed. Please check your internet connection and try again.');
+                return;
+            }
+            
+            console.log('Loading bets from Firebase...');
             loadBets(); // Load from Firebase with real-time listener
         });
 
