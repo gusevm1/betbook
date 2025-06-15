@@ -1,0 +1,1371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BetBook - Smart Betting Platform</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #2563eb;
+            --primary-dark: #1d4ed8;
+            --secondary-color: #f59e0b;
+            --accent-color: #10b981;
+            --bg-color: #0f172a;
+            --surface-color: #1e293b;
+            --text-primary: #f8fafc;
+            --text-secondary: #cbd5e1;
+            --border-color: #334155;
+            --gradient-1: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --gradient-2: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --gradient-3: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-color);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header */
+        header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border-color);
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: var(--gradient-1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary-color);
+        }
+
+        .cta-button {
+            background: var(--gradient-1);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.6);
+        }
+
+        /* Meet the Team Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            position: relative;
+            background: radial-gradient(ellipse at center, rgba(37, 99, 235, 0.15) 0%, transparent 70%);
+            overflow: hidden;
+            padding-top: 5rem;
+        }
+
+        .hero-content {
+            text-align: center;
+            width: 100%;
+        }
+
+        .hero-text h1 {
+            font-size: 3.5rem;
+            font-weight: 700;
+            line-height: 1.2;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, #f8fafc 0%, #cbd5e1 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-text p {
+            font-size: 1.25rem;
+            color: var(--text-secondary);
+            margin-bottom: 3rem;
+            line-height: 1.8;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 2rem;
+            margin-top: 3rem;
+            max-width: 900px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .team-grid .team-member:nth-child(1) {
+            grid-column: 1 / 3;
+        }
+
+        .team-grid .team-member:nth-child(2) {
+            grid-column: 3 / 5;
+        }
+
+        .team-grid .team-member:nth-child(3) {
+            grid-column: 5 / 7;
+        }
+
+        .team-grid .team-member:nth-child(4) {
+            grid-column: 2 / 4;
+            grid-row: 2;
+        }
+
+        .team-grid .team-member:nth-child(5) {
+            grid-column: 4 / 6;
+            grid-row: 2;
+        }
+
+        .team-member {
+            text-align: center;
+            padding: 1.5rem;
+            background: rgba(30, 41, 59, 0.5);
+            border-radius: 1.5rem;
+            border: 1px solid var(--border-color);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .team-member:hover {
+            transform: translateY(-5px);
+            border-color: var(--primary-color);
+            box-shadow: 0 20px 40px rgba(37, 99, 235, 0.2);
+        }
+
+        .team-member-image {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin: 0 auto 1rem;
+            border: 3px solid var(--primary-color);
+            box-shadow: 0 8px 25px rgba(37, 99, 235, 0.3);
+            object-position: center top;
+        }
+
+        /* Specific adjustment for Darcy's image */
+        .team-member-image[alt="Darcy"] {
+            object-position: center 20%;
+            object-fit: cover;
+        }
+
+        .team-member-name {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .team-member-role {
+            font-size: 0.9rem;
+            color: var(--secondary-color);
+            font-weight: 500;
+        }
+
+        .team-stats {
+            display: flex;
+            gap: 2rem;
+            margin-top: 4rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .stat-card {
+            text-align: center;
+            padding: 1.5rem;
+            background: rgba(30, 41, 59, 0.5);
+            border-radius: 1rem;
+            border: 1px solid var(--border-color);
+            backdrop-filter: blur(10px);
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--secondary-color);
+            display: block;
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+        }
+
+        /* About Section */
+        .about {
+            padding: 6rem 0;
+            background: linear-gradient(180deg, rgba(30, 41, 59, 0.2) 0%, rgba(30, 41, 59, 0.4) 100%);
+        }
+
+        .about-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .about-description {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            text-align: center;
+            margin-bottom: 3rem;
+            line-height: 1.8;
+        }
+
+        .about-highlights {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .highlight-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            padding: 1.5rem;
+            background: rgba(30, 41, 59, 0.5);
+            border-radius: 1rem;
+            border: 1px solid var(--border-color);
+        }
+
+        .highlight-item i {
+            font-size: 1.5rem;
+            color: var(--secondary-color);
+            margin-top: 0.5rem;
+        }
+
+        .highlight-item h4 {
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+
+        .highlight-item p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        /* Bet Wall Section */
+        .bet-wall {
+            padding: 6rem 0;
+            background: rgba(30, 41, 59, 0.1);
+        }
+
+        .bet-wall-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .create-bet-btn {
+            background: var(--gradient-2);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(240, 147, 251, 0.4);
+            margin-top: 1rem;
+        }
+
+        .create-bet-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(240, 147, 251, 0.6);
+        }
+
+        .create-bet-btn i {
+            margin-right: 0.5rem;
+        }
+
+        .bets-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .bet-card {
+            background: rgba(30, 41, 59, 0.6);
+            border: 1px solid var(--border-color);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            position: relative;
+        }
+
+        .bet-card:hover {
+            transform: translateY(-2px);
+            border-color: var(--accent-color);
+            box-shadow: 0 10px 30px rgba(16, 185, 129, 0.2);
+        }
+
+        .bet-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+
+        .bet-actions {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .delete-bet-btn {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            padding: 0.3rem 0.6rem;
+            border-radius: 0.3rem;
+            font-size: 0.7rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .delete-bet-btn:hover {
+            background: rgba(239, 68, 68, 0.3);
+            transform: scale(1.05);
+        }
+
+        .bet-creator {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            opacity: 0.8;
+        }
+
+        .bet-stake {
+            background: var(--gradient-3);
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .bet-description {
+            color: var(--text-primary);
+            font-size: 1rem;
+            line-height: 1.5;
+            margin-bottom: 1rem;
+        }
+
+        .bet-sides {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .bet-side {
+            flex: 1;
+            padding: 0.5rem;
+            border-radius: 0.5rem;
+            text-align: center;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid var(--border-color);
+        }
+
+        .voters-list {
+            font-size: 0.7rem;
+            opacity: 0.8;
+            margin-top: 0.3rem;
+            max-height: 2.4rem;
+            overflow-y: auto;
+            line-height: 1.2;
+        }
+
+        .bet-side.side-a {
+            background: rgba(34, 197, 94, 0.1);
+            border-color: rgba(34, 197, 94, 0.3);
+            color: #22c55e;
+        }
+
+        .bet-side.side-b {
+            background: rgba(239, 68, 68, 0.1);
+            border-color: rgba(239, 68, 68, 0.3);
+            color: #ef4444;
+        }
+
+        .bet-side:hover {
+            transform: scale(1.02);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .bet-stats {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            background: var(--surface-color);
+            margin: 5% auto;
+            padding: 2rem;
+            border: 1px solid var(--border-color);
+            border-radius: 1rem;
+            width: 90%;
+            max-width: 500px;
+            position: relative;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .close {
+            color: var(--text-secondary);
+            font-size: 2rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .close:hover {
+            color: var(--text-primary);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: 0.5rem;
+            background: rgba(15, 23, 42, 0.5);
+            color: var(--text-primary);
+            font-size: 1rem;
+        }
+
+        .form-group select {
+            cursor: pointer;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .submit-bet-btn {
+            background: var(--gradient-1);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+
+        .submit-bet-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        /* Contact Section */
+        .contact {
+            padding: 6rem 0;
+            background: linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.9) 100%);
+            text-align: center;
+        }
+
+        .contact-content {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .contact h2 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            background: var(--gradient-1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .contact-description {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+
+        .whatsapp-button {
+            background: #25D366;
+            color: white;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(37, 211, 102, 0.4);
+        }
+
+        .whatsapp-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(37, 211, 102, 0.6);
+            background: #20c55a;
+        }
+
+        .whatsapp-button i {
+            font-size: 1.3rem;
+        }
+
+        .complaint-text {
+            margin-top: 2rem;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            font-style: italic;
+        }
+
+        /* Features Section */
+        .features {
+            padding: 6rem 0;
+            background: linear-gradient(180deg, transparent 0%, rgba(30, 41, 59, 0.3) 100%);
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            background: var(--gradient-1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .section-subtitle {
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            margin-bottom: 4rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .feature-card {
+            background: rgba(30, 41, 59, 0.5);
+            border: 1px solid var(--border-color);
+            border-radius: 1.5rem;
+            padding: 2rem;
+            text-align: center;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--primary-color);
+            box-shadow: 0 20px 40px rgba(37, 99, 235, 0.2);
+        }
+
+        .feature-icon {
+            width: 4rem;
+            height: 4rem;
+            margin: 0 auto 1.5rem;
+            background: var(--gradient-1);
+            border-radius: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+        }
+
+        .feature-card h3 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+        }
+
+        .feature-card p {
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        /* CTA Section */
+        .cta-section {
+            padding: 6rem 0;
+            text-align: center;
+            background: var(--gradient-1);
+            margin-top: 4rem;
+        }
+
+        .cta-section h2 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: white;
+        }
+
+        .cta-section p {
+            font-size: 1.1rem;
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 2rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn-primary {
+            background: white;
+            color: var(--primary-color);
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 0.75rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: white;
+            padding: 1rem 2rem;
+            border: 2px solid white;
+            border-radius: 0.75rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .btn-secondary:hover {
+            background: white;
+            color: var(--primary-color);
+        }
+
+        /* Footer */
+        footer {
+            background: var(--surface-color);
+            border-top: 1px solid var(--border-color);
+            padding: 3rem 0 1rem;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .footer-section h3 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+        }
+
+        .footer-section ul {
+            list-style: none;
+        }
+
+        .footer-section li {
+            margin-bottom: 0.5rem;
+        }
+
+        .footer-section a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .footer-section a:hover {
+            color: var(--primary-color);
+        }
+
+        .footer-bottom {
+            border-top: 1px solid var(--border-color);
+            padding-top: 1rem;
+            text-align: center;
+            color: var(--text-secondary);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .hero-text h1 {
+                font-size: 2.5rem;
+            }
+
+            .team-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 1.5rem;
+                max-width: 400px;
+            }
+
+            .team-grid .team-member:nth-child(4),
+            .team-grid .team-member:nth-child(5) {
+                margin: 0;
+                grid-column: auto;
+                grid-row: auto;
+            }
+
+            .team-grid .team-member:nth-child(5) {
+                grid-column: 1 / -1;
+                justify-self: center;
+                max-width: 180px;
+            }
+
+            .team-member {
+                padding: 1rem;
+            }
+
+            .team-member-image {
+                width: 100px;
+                height: 100px;
+            }
+
+            .team-stats {
+                justify-content: center;
+                gap: 1rem;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            .cta-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .whatsapp-button {
+                padding: 0.8rem 1.5rem;
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav class="container">
+            <div class="logo">BetBook</div>
+            <ul class="nav-links">
+                <li><a href="#home">Home</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+            <a href="#bet-wall" class="cta-button">Get Started</a>
+        </nav>
+    </header>
+
+    <main>
+        <section class="hero" id="home">
+            <div class="container">
+                <div class="hero-content">
+                    <div class="hero-text">
+                        <h1>Meet the Team</h1>
+                        <p>The brilliant minds behind BetBook - passionate about creating the most degenerate experience for you and your friends.</p>
+                    </div>
+                    
+                    <div class="team-grid">
+                        <div class="team-member">
+                            <img src="images/val_ai.jpeg" alt="Val" class="team-member-image">
+                            <div class="team-member-name">Val</div>
+                            <div class="team-member-role">Chief Betting Officer & Political Analyst</div>
+                        </div>
+                        
+                        <div class="team-member">
+                            <img src="images/maxim_ai.png" alt="Maxim" class="team-member-image">
+                            <div class="team-member-name">Maxim</div>
+                            <div class="team-member-role">Founder & CEO</div>
+                        </div>
+                        
+                        <div class="team-member">
+                            <img src="images/rahel_normal.jpeg" alt="Rahel" class="team-member-image">
+                            <div class="team-member-name">Rahel</div>
+                            <div class="team-member-role">Head of Community & Psychoanalyst (Doctor)</div>
+                        </div>
+                        
+                        <div class="team-member">
+                            <img src="images/eesh_ai.png" alt="Eesh" class="team-member-image">
+                            <div class="team-member-name">Eesha</div>
+                            <div class="team-member-role">Technical Lead & Financial Mastermind</div>
+                        </div>
+                        
+                        <div class="team-member">
+                            <img src="images/darcy_ai.png" alt="Darcy" class="team-member-image">
+                            <div class="team-member-name">Darcy</div>
+                            <div class="team-member-role">Product Designer & Expert of Feminist Literature</div>
+                        </div>
+                    </div>
+                    
+                    <div class="team-stats">
+                        <div class="stat-card">
+                            <span class="stat-number">2 CHF</span>
+                            <span class="stat-label">Fixed Stake</span>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-number">100%</span>
+                            <span class="stat-label">Fair Play</span>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-number">24/7</span>
+                            <span class="stat-label">Live Betting</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="about" id="about">
+            <div class="container">
+                <h2 class="section-title">What is BetBook?</h2>
+                <div class="about-content">
+                    <div class="about-text">
+                        <p class="about-description">BetBook was created for us to be able to make bets more easily from who will go bald first, Maxim or Darcy, to will Musk and Trump say that they like each other online in the next 24 hours. Think of it as a digital ledger for our friendly wagers.</p>
+                        
+                        <div class="about-highlights">
+                            <div class="highlight-item">
+                                <i class="fas fa-handshake"></i>
+                                <div>
+                                    <h4>Not Legally Binding</h4>
+                                    <p>These are friendly bets between friends - no legal obligations, just fun!</p>
+                                </div>
+                            </div>
+                            <div class="highlight-item">
+                                <i class="fas fa-laugh"></i>
+                                <div>
+                                    <h4>Silly & Fun</h4>
+                                    <p>Perfect for those random debates and silly predictions with your crew.</p>
+                                </div>
+                            </div>
+                            <div class="highlight-item">
+                                <i class="fas fa-coins"></i>
+                                <div>
+                                    <h4>Low Stakes, High Fun</h4>
+                                    <p>Fixed 2 CHF keeps it light-hearted and accessible for everyone.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="bet-wall" id="bet-wall">
+            <div class="container">
+                <div class="bet-wall-header">
+                    <h2 class="section-title">🏆 The Bet Wall</h2>
+                    <p class="section-subtitle">Bets from our community</p>
+                    <button class="create-bet-btn" id="createBetBtn">
+                        <i class="fas fa-plus"></i>
+                        Create New Bet
+                    </button>
+                </div>
+
+                <div class="bets-grid" id="betsGrid">
+                    <!-- Bets will be loaded here -->
+                </div>
+            </div>
+        </section>
+
+        <section class="contact" id="contact">
+            <div class="container">
+                <div class="contact-content">
+                    <h2>Get in Touch</h2>
+                    <p class="contact-description">Questions, feedback, or just want to chat about betting? We're here to help! Reach out to us directly via WhatsApp.</p>
+                    
+                    <a href="https://wa.me/41789442423" target="_blank" class="whatsapp-button">
+                        <i class="fab fa-whatsapp"></i>
+                        Contact us on WhatsApp
+                    </a>
+                    
+                    <p class="complaint-text">Got complaints? No worries - just drop us a message and we'll sort it out! 😊</p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>BetBook</h3>
+                    <p style="color: var(--text-secondary); margin-top: 0.5rem;">The smart way to bet with friends. Fair, secure, and exciting.</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Platform</h3>
+                    <ul>
+                        <li><a href="#">How to Lose 2 CHF</a></li>
+                        <li><a href="#">"Security" (It's Your Friends)</a></li>
+                        <li><a href="#">Pricing (Always 2 CHF, Duh)</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Support</h3>
+                    <ul>
+                        <li><a href="#">Cry Here</a></li>
+                        <li><a href="#">WhatsApp Maxim</a></li>
+                        <li><a href="#">Degenerate Community</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Legal-ish</h3>
+                    <ul>
+                        <li><a href="#">Privacy? What Privacy I steal your data</a></li>
+                        <li><a href="#">Terms: Don't Be Weird</a></li>
+                        <li><a href="#">Gamble Responsibly (Maybe)</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 BetBook. All rights reserved. Bet responsibly.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bet Creation Modal -->
+    <div id="betModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Create New Bet</h2>
+                <span class="close" id="closeModal">&times;</span>
+            </div>
+            <form id="betForm">
+                <div class="form-group">
+                    <label for="betDescription">What's the bet about?</label>
+                    <textarea id="betDescription" placeholder="e.g., I bet it will rain tomorrow in Zurich" required></textarea>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="sideA">Side A (Pro)</label>
+                        <input type="text" id="sideA" placeholder="e.g., Yes, it will rain" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="sideB">Side B (Con)</label>
+                        <input type="text" id="sideB" placeholder="e.g., No, it won't rain" required>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="betCreator">Your Name</label>
+                    <input type="text" id="betCreator" placeholder="Anonymous Bettor" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="betLifetime">Bet Duration</label>
+                    <select id="betLifetime" required>
+                        <option value="1 hour">1 Hour</option>
+                        <option value="6 hours">6 Hours</option>
+                        <option value="1 day" selected>1 Day</option>
+                        <option value="3 days">3 Days</option>
+                        <option value="1 week">1 Week</option>
+                        <option value="1 month">1 Month</option>
+                        <option value="custom">Custom</option>
+                    </select>
+                </div>
+                
+                <button type="submit" class="submit-bet-btn">
+                    <i class="fas fa-plus"></i>
+                    Create Bet (2 CHF)
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Bets data - load from localStorage or start empty
+        let bets = JSON.parse(localStorage.getItem('betbook-bets') || '[]');
+
+        // DOM Elements
+        const modal = document.getElementById('betModal');
+        const createBetBtn = document.getElementById('createBetBtn');
+        const closeModal = document.getElementById('closeModal');
+        const betForm = document.getElementById('betForm');
+        const betsGrid = document.getElementById('betsGrid');
+
+        // Modal functionality
+        createBetBtn.addEventListener('click', () => {
+            modal.style.display = 'block';
+        });
+
+        closeModal.addEventListener('click', () => {
+            modal.style.display = 'none';
+        });
+
+        window.addEventListener('click', (event) => {
+            if (event.target === modal) {
+                modal.style.display = 'none';
+            }
+        });
+
+                // Create bet card HTML
+        function createBetCard(bet) {
+            const totalVotes = bet.sideAVotes + bet.sideBVotes;
+            const sideAPercentage = totalVotes > 0 ? Math.round((bet.sideAVotes / totalVotes) * 100) : 50;
+            const sideBPercentage = totalVotes > 0 ? Math.round((bet.sideBVotes / totalVotes) * 100) : 50;
+
+            const sideAVoters = bet.sideAVoters ? bet.sideAVoters.join(', ') : '';
+            const sideBVoters = bet.sideBVoters ? bet.sideBVoters.join(', ') : '';
+
+            return `
+                <div class="bet-card" data-bet-id="${bet.id}">
+                    <div class="bet-header">
+                        <span class="bet-creator">by ${bet.creator}</span>
+                        <div class="bet-actions">
+                            <span class="bet-stake">2 CHF</span>
+                            <button class="delete-bet-btn" onclick="deleteBet(${bet.id})">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="bet-description">${bet.description}</div>
+                    <div class="bet-sides">
+                        <div class="bet-side side-a" onclick="voteBet(${bet.id}, 'A')">
+                            <div>${bet.sideA}</div>
+                            <div style="font-size: 0.8rem; margin-top: 0.5rem; opacity: 0.8;">${sideAPercentage}% (${bet.sideAVotes})</div>
+                            ${sideAVoters ? `<div class="voters-list">${sideAVoters}</div>` : ''}
+                        </div>
+                        <div class="bet-side side-b" onclick="voteBet(${bet.id}, 'B')">
+                            <div>${bet.sideB}</div>
+                            <div style="font-size: 0.8rem; margin-top: 0.5rem; opacity: 0.8;">${sideBPercentage}% (${bet.sideBVotes})</div>
+                            ${sideBVoters ? `<div class="voters-list">${sideBVoters}</div>` : ''}
+                        </div>
+                    </div>
+                    <div class="bet-stats">
+                        <span>${totalVotes} votes</span>
+                        <span>${bet.created}</span>
+                        <span>⏱️ ${bet.lifetime}</span>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Render all bets
+        function renderBets() {
+            betsGrid.innerHTML = bets.map(bet => createBetCard(bet)).join('');
+        }
+
+        // Save bets to localStorage
+        function saveBets() {
+            localStorage.setItem('betbook-bets', JSON.stringify(bets));
+        }
+
+        // Vote on a bet
+        function voteBet(betId, side) {
+            const voterName = prompt("What's your name?");
+            if (!voterName || voterName.trim() === '') return;
+            
+            const bet = bets.find(b => b.id === betId);
+            if (bet) {
+                // Initialize voter arrays if they don't exist
+                if (!bet.sideAVoters) bet.sideAVoters = [];
+                if (!bet.sideBVoters) bet.sideBVoters = [];
+                
+                // Check if person already voted
+                const alreadyVotedA = bet.sideAVoters.includes(voterName);
+                const alreadyVotedB = bet.sideBVoters.includes(voterName);
+                
+                if (alreadyVotedA || alreadyVotedB) {
+                    alert("You already voted on this bet, you degenerate! 😄");
+                    return;
+                }
+                
+                if (side === 'A') {
+                    bet.sideAVotes++;
+                    bet.sideAVoters.push(voterName);
+                } else {
+                    bet.sideBVotes++;
+                    bet.sideBVoters.push(voterName);
+                }
+                renderBets();
+                saveBets(); // Save to localStorage
+                
+                // Add a little animation feedback
+                const betCard = document.querySelector(`[data-bet-id="${betId}"]`);
+                betCard.style.transform = 'scale(1.02)';
+                setTimeout(() => {
+                    betCard.style.transform = 'scale(1)';
+                }, 200);
+            }
+        }
+
+        // Delete a bet with two witty confirmations
+        function deleteBet(betId) {
+            const bet = bets.find(b => b.id === betId);
+            if (!bet) return;
+            
+            // First confirmation
+            const firstConfirm = confirm(
+                `Hold up! You sure you want to delete "${bet.description}"? \n\n` +
+                `This will disappear faster than your 2 CHF when you lose a bet!`
+            );
+            
+            if (!firstConfirm) return;
+            
+            // Second confirmation - even wittier
+            const secondConfirm = confirm(
+                `Are you REALLY sure?!\n\n` +
+                `This bet has ${bet.sideAVotes + bet.sideBVotes} votes and people might actually care about it!\n` +
+                `Once it's gone, it's gone!\n\n` +
+                `Last chance to stop...`
+            );
+            
+            if (!secondConfirm) return;
+            
+            // If they made it through both confirmations, delete it
+            bets = bets.filter(b => b.id !== betId);
+            renderBets();
+            saveBets();
+            
+            // Little message for the delete
+            alert("Bet deleted! I hope everybody got paid out.");
+        }
+
+        // Make functions globally accessible
+        window.voteBet = voteBet;
+        window.deleteBet = deleteBet;
+
+        // Handle bet form submission
+        betForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const description = document.getElementById('betDescription').value;
+            const sideA = document.getElementById('sideA').value;
+            const sideB = document.getElementById('sideB').value;
+            const creator = document.getElementById('betCreator').value;
+            const lifetime = document.getElementById('betLifetime').value;
+
+            const newBet = {
+                id: bets.length + 1,
+                creator: creator,
+                description: description,
+                sideA: sideA,
+                sideB: sideB,
+                sideAVotes: 0,
+                sideBVotes: 0,
+                sideAVoters: [],
+                sideBVoters: [],
+                created: "just now",
+                lifetime: lifetime
+            };
+
+            bets.unshift(newBet); // Add to beginning of array
+            renderBets();
+            saveBets(); // Save to localStorage
+            
+            // Reset form and close modal
+            betForm.reset();
+            modal.style.display = 'none';
+            
+            // Scroll to bet wall to show the new bet
+            document.getElementById('bet-wall').scrollIntoView({ behavior: 'smooth' });
+            
+            // Highlight the new bet
+            setTimeout(() => {
+                const newBetCard = document.querySelector(`[data-bet-id="${newBet.id}"]`);
+                newBetCard.style.border = '2px solid #10b981';
+                newBetCard.style.boxShadow = '0 0 20px rgba(16, 185, 129, 0.3)';
+                setTimeout(() => {
+                    newBetCard.style.border = '';
+                    newBetCard.style.boxShadow = '';
+                }, 3000);
+            }, 500);
+        });
+
+        // Initialize bets when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            renderBets();
+        });
+
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Header background on scroll
+        window.addEventListener('scroll', () => {
+            const header = document.querySelector('header');
+            if (window.scrollY > 100) {
+                header.style.background = 'rgba(15, 23, 42, 0.98)';
+            } else {
+                header.style.background = 'rgba(15, 23, 42, 0.95)';
+            }
+        });
+
+        // Intersection Observer for animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        // Observe feature cards and bet cards
+        document.querySelectorAll('.feature-card').forEach(card => {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(20px)';
+            card.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+            observer.observe(card);
+        });
+
+        // Add some fun hover effects to bet cards
+        document.addEventListener('mouseover', (e) => {
+            if (e.target.closest('.bet-card')) {
+                const card = e.target.closest('.bet-card');
+                card.style.transform = 'translateY(-2px) scale(1.01)';
+            }
+        });
+
+        document.addEventListener('mouseout', (e) => {
+            if (e.target.closest('.bet-card')) {
+                const card = e.target.closest('.bet-card');
+                card.style.transform = '';
+            }
+        });
+    </script>
+</body>
+</html> 
