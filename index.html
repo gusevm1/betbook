@@ -6,6 +6,31 @@
     <title>BetBook - Smart Betting Platform</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- Firebase SDKs -->
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js'
+        import { getFirestore, collection, addDoc, onSnapshot, doc, updateDoc, deleteDoc, arrayUnion, arrayRemove } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js'
+        
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyCoB6avhC785CuRL1Ch23p1271-px0Ksts",
+            authDomain: "betbook-4b3bd.firebaseapp.com",
+            projectId: "betbook-4b3bd",
+            storageBucket: "betbook-4b3bd.firebasestorage.app",
+            messagingSenderId: "870522984930",
+            appId: "1:870522984930:web:f23a003eb2e49a360001bb",
+            measurementId: "G-9HG1Q11P4Z"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        
+        // Make Firebase functions globally available
+        window.db = db;
+        window.firestore = { collection, addDoc, onSnapshot, doc, updateDoc, deleteDoc, arrayUnion, arrayRemove };
+    </script>
     <style>
         * {
             margin: 0;
@@ -1101,8 +1126,8 @@
     </div>
 
     <script>
-        // Bets data - load from localStorage or start empty
-        let bets = JSON.parse(localStorage.getItem('betbook-bets') || '[]');
+        // Bets data - now from Firebase
+        let bets = [];
 
         // DOM Elements
         const modal = document.getElementById('betModal');
@@ -1110,6 +1135,20 @@
         const closeModal = document.getElementById('closeModal');
         const betForm = document.getElementById('betForm');
         const betsGrid = document.getElementById('betsGrid');
+
+        // Wait for Firebase to be ready
+        function waitForFirebase() {
+            return new Promise((resolve) => {
+                const checkFirebase = () => {
+                    if (window.db && window.firestore) {
+                        resolve();
+                    } else {
+                        setTimeout(checkFirebase, 100);
+                    }
+                };
+                checkFirebase();
+            });
+        }
 
         // Modal functionality
         createBetBtn.addEventListener('click', () => {
@@ -1173,15 +1212,42 @@
             betsGrid.innerHTML = bets.map(bet => createBetCard(bet)).join('');
         }
 
-        // Save bets to localStorage
-        function saveBets() {
-            localStorage.setItem('betbook-bets', JSON.stringify(bets));
+        // Load bets from Firebase (real-time listener)
+        async function loadBets() {
+            await waitForFirebase();
+            const { collection, onSnapshot } = window.firestore;
+            const betsCollection = collection(window.db, 'bets');
+            
+            onSnapshot(betsCollection, (snapshot) => {
+                bets = [];
+                snapshot.forEach((doc) => {
+                    bets.push({ id: doc.id, ...doc.data() });
+                });
+                // Sort by creation time (newest first)
+                bets.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+                renderBets();
+            });
+        }
+
+        // Add bet to Firebase
+        async function addBetToFirebase(bet) {
+            await waitForFirebase();
+            const { collection, addDoc } = window.firestore;
+            const betsCollection = collection(window.db, 'bets');
+            
+            await addDoc(betsCollection, {
+                ...bet,
+                createdAt: Date.now()
+            });
         }
 
         // Vote on a bet
-        function voteBet(betId, side) {
+        async function voteBet(betId, side) {
             const voterName = prompt("What's your name?");
             if (!voterName || voterName.trim() === '') return;
+            
+            await waitForFirebase();
+            const { doc, updateDoc, arrayUnion } = window.firestore;
             
             const bet = bets.find(b => b.id === betId);
             if (bet) {
@@ -1198,27 +1264,36 @@
                     return;
                 }
                 
-                if (side === 'A') {
-                    bet.sideAVotes++;
-                    bet.sideAVoters.push(voterName);
-                } else {
-                    bet.sideBVotes++;
-                    bet.sideBVoters.push(voterName);
+                try {
+                    const betRef = doc(window.db, 'bets', betId);
+                    
+                    if (side === 'A') {
+                        await updateDoc(betRef, {
+                            sideAVotes: (bet.sideAVotes || 0) + 1,
+                            sideAVoters: arrayUnion(voterName)
+                        });
+                    } else {
+                        await updateDoc(betRef, {
+                            sideBVotes: (bet.sideBVotes || 0) + 1,
+                            sideBVoters: arrayUnion(voterName)
+                        });
+                    }
+                    
+                    // Add a little animation feedback
+                    const betCard = document.querySelector(`[data-bet-id="${betId}"]`);
+                    betCard.style.transform = 'scale(1.02)';
+                    setTimeout(() => {
+                        betCard.style.transform = 'scale(1)';
+                    }, 200);
+                } catch (error) {
+                    console.error('Error voting:', error);
+                    alert('Error voting. Please try again.');
                 }
-                renderBets();
-                saveBets(); // Save to localStorage
-                
-                // Add a little animation feedback
-                const betCard = document.querySelector(`[data-bet-id="${betId}"]`);
-                betCard.style.transform = 'scale(1.02)';
-                setTimeout(() => {
-                    betCard.style.transform = 'scale(1)';
-                }, 200);
             }
         }
 
         // Delete a bet with two witty confirmations
-        function deleteBet(betId) {
+        async function deleteBet(betId) {
             const bet = bets.find(b => b.id === betId);
             if (!bet) return;
             
@@ -1233,20 +1308,25 @@
             // Second confirmation - even wittier
             const secondConfirm = confirm(
                 `Are you REALLY sure?!\n\n` +
-                `This bet has ${bet.sideAVotes + bet.sideBVotes} votes and people might actually care about it!\n` +
+                `This bet has ${(bet.sideAVotes || 0) + (bet.sideBVotes || 0)} votes and people might actually care about it!\n` +
                 `Once it's gone, it's gone!\n\n` +
                 `Last chance to stop...`
             );
             
             if (!secondConfirm) return;
             
-            // If they made it through both confirmations, delete it
-            bets = bets.filter(b => b.id !== betId);
-            renderBets();
-            saveBets();
-            
-            // Little message for the delete
-            alert("Bet deleted! I hope everybody got paid out.");
+            try {
+                await waitForFirebase();
+                const { doc, deleteDoc } = window.firestore;
+                const betRef = doc(window.db, 'bets', betId);
+                await deleteDoc(betRef);
+                
+                // Little message for the delete
+                alert("Bet deleted! I hope everybody got paid out.");
+            } catch (error) {
+                console.error('Error deleting bet:', error);
+                alert('Error deleting bet. Please try again.');
+            }
         }
 
         // Make functions globally accessible
@@ -1254,7 +1334,7 @@
         window.deleteBet = deleteBet;
 
         // Handle bet form submission
-        betForm.addEventListener('submit', (e) => {
+        betForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             
             const description = document.getElementById('betDescription').value;
@@ -1264,7 +1344,6 @@
             const lifetime = document.getElementById('betLifetime').value;
 
             const newBet = {
-                id: bets.length + 1,
                 creator: creator,
                 description: description,
                 sideA: sideA,
@@ -1277,32 +1356,28 @@
                 lifetime: lifetime
             };
 
-            bets.unshift(newBet); // Add to beginning of array
-            renderBets();
-            saveBets(); // Save to localStorage
-            
-            // Reset form and close modal
-            betForm.reset();
-            modal.style.display = 'none';
-            
-            // Scroll to bet wall to show the new bet
-            document.getElementById('bet-wall').scrollIntoView({ behavior: 'smooth' });
-            
-            // Highlight the new bet
-            setTimeout(() => {
-                const newBetCard = document.querySelector(`[data-bet-id="${newBet.id}"]`);
-                newBetCard.style.border = '2px solid #10b981';
-                newBetCard.style.boxShadow = '0 0 20px rgba(16, 185, 129, 0.3)';
-                setTimeout(() => {
-                    newBetCard.style.border = '';
-                    newBetCard.style.boxShadow = '';
-                }, 3000);
-            }, 500);
+            try {
+                await addBetToFirebase(newBet);
+                
+                // Reset form and close modal
+                betForm.reset();
+                modal.style.display = 'none';
+                
+                // Scroll to bet wall to show the new bet
+                document.getElementById('bet-wall').scrollIntoView({ behavior: 'smooth' });
+                
+                // Success message
+                alert("🎲 Bet created! All your friends can now see it in real-time!");
+                
+            } catch (error) {
+                console.error('Error creating bet:', error);
+                alert('Error creating bet. Please try again.');
+            }
         });
 
         // Initialize bets when page loads
         document.addEventListener('DOMContentLoaded', () => {
-            renderBets();
+            loadBets(); // Load from Firebase with real-time listener
         });
 
         // Smooth scrolling for navigation links
